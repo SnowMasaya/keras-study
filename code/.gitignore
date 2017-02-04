@@ -96,3 +96,4 @@ Data/
 Data/*
 disk.vdi
 *.pkl
+model/*
