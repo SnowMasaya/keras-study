@@ -1,0 +1,12 @@
+import sympy as S
+from sympy import stats
+S.var('x:2', real=True)
+S.var('mu:2', real=True)
+S.var('sigma:2', positive=True)
+S.var('t', positive=True)
+x0 = stats.Normal(x0, mu0, sigma0)
+x1 = stats.Normal(x1, mu1, sigma1)
+mgf0 = S.simplify(stats.E(S.exp(t * x0)))
+mgf1 = S.simplify(stats.E(S.exp(t * x1)))
+mgfY = S.simplify(mgf0 * mgf1)
+S.collect(S.expand(S.log(mgfY)), t)
