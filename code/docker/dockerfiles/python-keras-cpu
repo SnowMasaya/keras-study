@@ -58,26 +58,66 @@ RUN conda install -y python=${python_version} && \
 ADD template/theanorc /home/keras/.theanorc
 
 ENV PYTHONPATH='/src/:$PYTHONPATH'
+
+#################################################################################################################
+#           Caffe Setting
+#################################################################################################################
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        libatlas-base-dev \
+        libboost-all-dev \
+        libgflags-dev \
+        libgoogle-glog-dev \
+        libhdf5-serial-dev \
+        libleveldb-dev \
+        liblmdb-dev \
+        libopencv-dev \
+        libprotobuf-dev \
+        libsnappy-dev \
+        protobuf-compiler && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV CAFFE_ROOT=/opt/caffe
+WORKDIR $CAFFE_ROOT
+
+# FIXME: use ARG instead of ENV once DockerHub supports this
+ENV CLONE_TAG=rc4
+
+RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
+    pip install --upgrade pip && \
+    cd python && for req in $(cat requirements.txt) pydot; do pip install $req; done && cd .. && \
+    mkdir build && cd build && \
+    cmake -DCPU_ONLY=1 .. && \
+    make -j"$(nproc)"
+
+
+ENV PYCAFFE_ROOT /opt/conda/bin/python
+ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
+RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 #################################################################################################################
 #           User Setting
 #################################################################################################################
 ENV NB_USER keras
 ENV NB_UID 1000
 
-RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
-    mkdir -p $CONDA_DIR && \
-    chown keras $CONDA_DIR -R && \
-    mkdir -p /src && \
-    chown keras /src
+#RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+RUN mkdir -p $CONDA_DIR && \
+    #chown keras $CONDA_DIR -R && \
+    mkdir -p /src
+    #mkdir -p /src && \
+    #chown keras /src
 
+#USER keras
 #################################################################################################################
 #           Jupyter Setting
 #################################################################################################################
 
 ADD keras/ /src/keras/
 WORKDIR /src
-USER keras
 
 EXPOSE 8888
 
-#CMD /opt/conda/bin/jupyter notebook --port=8888 --ip=0.0.0.0
+CMD cd /opt/conda/lib/python3.5/site-packages && /opt/conda/bin/jupyter notebook --port=8888 --ip=0.0.0.0
