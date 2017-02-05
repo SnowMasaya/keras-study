@@ -72,7 +72,7 @@ TAG=$(shell echo $$CIRCLE_SHA1 | cut -c 1-7)
 # fig.ml). The test & test-ci targets wil be run with all links set
 # correctly.
 DOCKER_RUN_KERAS:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-cpu
-DOCKER_RUN_KERAS_GPU:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-gpu
+DOCKER_RUN_DL:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/deep-learning-gpu
 
 # Wildcard rule to build an image from a file inside dockerfiles/
 # Use the tasks like any other dependency. Order may be controller
@@ -100,8 +100,8 @@ test:
 test-python-keras-cpu : images/python-keras-cpu
 	$(DOCKER_RUN_KERAS)
 
-test-python-keras-gpu : images/python-keras-gpu
-	$(DOCKER_RUN_KERAS_GPU)
+test-deep-learning-gpu : images/deep-learning-gpu
+	$(DOCKER_RUN_DL)
 
 teardown:
 	$(DOCKER_COMPOSE) stop
