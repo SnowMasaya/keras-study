@@ -1,29 +1,82 @@
 #################################################################################################################
 # Reference
-#    https://github.com/fchollet/keras/blob/master/docker/Dockerfile
+#     https://hub.docker.com/r/lefant/python3-keras/~/dockerfile/
 #################################################################################################################
 
 FROM nvidia/cuda:8.0-cudnn5-devel
 
 #################################################################################################################
-#           Conda Setting
+#           Initial Setting
 #################################################################################################################
-ENV CONDA_DIR /opt/conda
-ENV PATH $CONDA_DIR/bin:$PATH
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8 ENV PYTHONUNBUFFERED 1
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y \
+        build-essential \
+        curl \
+        git \
+        make \
+        wget \
+        python3-dev \
+        python3-setuptools \
+        python3-wheel \
+        gfortran \
+        graphviz \
+        libagg-dev \
+        libatlas-dev \
+        libffi-dev \
+        libfreetype6-dev \
+        libhdf5-dev \
+        liblapack-dev \
+        libncurses5-dev \
+        libopenblas-dev \
+        libpng12-dev \
+        libxft-dev \
+        libxml2-dev \
+        libxslt-dev \
+        libblas-dev \
+        libprotobuf-dev \
+        libncurses-dev \
+        swig \
+        zlib1g-dev \
+        ttf-bitstream-vera && \
+    apt-get clean
 
-RUN mkdir -p $CONDA_DIR && \
-    echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh && \
-    apt-get update && \
-    apt-get install -y wget git libhdf5-dev g++ graphviz && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-3.9.1-Linux-x86_64.sh && \
-    echo "6c6b44acdd0bc4229377ee10d52c8ac6160c336d9cdd669db7371aa9344e1ac3 *Miniconda3-3.9.1-Linux-x86_64.sh" | sha256sum -c - && \
-    /bin/bash /Miniconda3-3.9.1-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
-    rm Miniconda3-3.9.1-Linux-x86_64.sh
+#################################################################################################################
+#           Python Setting
+#################################################################################################################
 
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python3 get-pip.py && \
+    rm get-pip.py
+# must be installed before scikit-learn RUN pip3 install numpy
+RUN pip3 install numpy
+RUN pip3 install scipy
+ADD requirements.txt /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
 #################################################################################################################
-#           OpenCV Setting
+#           Opencv Setting
 #################################################################################################################
-RUN apt-get update && apt-get install -y python-opencv
+RUN apt-get install -y cmake libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+RUN mkdir OpenCV-tmp && \
+    cd OpenCV-tmp && \
+    git clone https://github.com/Itseez/opencv.git && \
+    cd opencv && \
+    cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local . && \
+    make clean && \
+    make && \
+    make install
+#################################################################################################################
+#           Machine Learning Setting
+#################################################################################################################
+RUN pip3 install --upgrade git+git://github.com/lefant/scikit-optimize.git
+RUN pip3 install https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-0.12.0rc0-cp35-cp35m-linux_x86_64.whl
+RUN pip3 install git+git://github.com/Theano/Theano.git
+RUN pip3 install keras
+RUN pip3 install kerasmodelzoo
+
 #################################################################################################################
 #           User Setting
 #################################################################################################################
@@ -37,24 +90,7 @@ RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     chown keras /src
 
 USER keras
-#################################################################################################################
-#           Python Setting
-#################################################################################################################
 
-ARG python_version=3.5.2
-ARG tensorflow_version=0.12.0rc0-cp35-cp35m
-RUN conda install -y python=${python_version} && \
-    pip install https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-${tensorflow_version}-linux_x86_64.whl && \
-    pip install git+git://github.com/Theano/Theano.git && \
-    pip install ipdb pytest pytest-cov python-coveralls coverage==3.7.1 pytest-xdist pep8 pytest-pep8 pydot_ng && \
-    conda install Pillow scikit-learn notebook pandas matplotlib nose pyyaml six h5py && \
-    pip install git+git://github.com/fchollet/keras.git && \
-    pip install git+git://github.com/albertomontesg/keras-model-zoo.git && \
-    conda clean -yt
-
-ADD template/theanorc /home/keras/.theanorc
-
-ENV PYTHONPATH='/src/:$PYTHONPATH'
 #################################################################################################################
 #           Jupyter Setting
 #################################################################################################################

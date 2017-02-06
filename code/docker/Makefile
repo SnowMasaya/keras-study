@@ -104,7 +104,7 @@ test-python-keras-cpu : images/python-keras-cpu
 test-deep-learning-gpu : images/deep-learning-gpu
 	$(DOCKER_RUN_DL)
 
-test-python-keras-gpu : images/python-keras
+test-python-keras : images/python-keras
 	$(DOCKER_RUN_KERAS_GPU)
 
 teardown:
