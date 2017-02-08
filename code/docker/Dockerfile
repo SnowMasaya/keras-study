@@ -1,1 +1,1 @@
-dockerfiles/python-keras
+dockerfiles/deep-learning-gpu
