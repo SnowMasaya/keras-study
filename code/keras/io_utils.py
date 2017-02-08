@@ -157,7 +157,10 @@ class OFFMatrix(object):
         pass
 
     def __getitem__(self, key):
-        return self.data[key]
+        if isinstance(key, str):
+            return self.data[key]
+        else:
+            raise IndexError
 
     @property
     def shape(self):
