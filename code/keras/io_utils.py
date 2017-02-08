@@ -124,14 +124,22 @@ class OFFMatrix(object):
         An array-like OFF dataset.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, datapath, dataset, start=0, end=None, normalizer=None):
+        try:
+            with open(datapath + dataset, "r") as f:
+                self.data = f.read().strip().split()
+        except IOError as io:
+            print(str(io))
+        self.file_format = self.data.pop(0)
+        self.num_vertices = int(self.data.pop(0))
+        self.num_faces = int(self.data.pop(0))
+        self.num_edges = int(self.data.pop(0))
 
     def __len__(self):
         pass
 
-    def __getitem__(self, key):
-        pass
+    def __getitem__(self):
+        return self.data
 
     @property
     def shape(self):
