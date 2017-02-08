@@ -127,19 +127,37 @@ class OFFMatrix(object):
     def __init__(self, datapath, dataset, start=0, end=None, normalizer=None):
         try:
             with open(datapath + dataset, "r") as f:
-                self.data = f.read().strip().split()
+                self.read_data = f.read().strip().split()
         except IOError as io:
             print(str(io))
-        self.file_format = self.data.pop(0)
-        self.num_vertices = int(self.data.pop(0))
-        self.num_faces = int(self.data.pop(0))
-        self.num_edges = int(self.data.pop(0))
+        self.data = {}
+        self.data["file_format"] = self.read_data.pop(0)
+        self.data["num_vertices"] = int(self.read_data.pop(0))
+        self.data["num_faces"] = int(self.read_data.pop(0))
+        self.data["num_edges"] = int(self.read_data.pop(0))
+        VERTICES_DIM = 3
+        FACES_DIM = 4
+        if self.data["num_vertices"] != 0:
+            self.data["vertices"] = self.__get_data_process(self.data["num_vertices"], VERTICES_DIM)
+            print(self.data["vertices"])
+        if self.data["num_faces"] != 0:
+            self.data["faces"] = self.__get_data_process(self.data["num_faces"], FACES_DIM)
+            print(self.data["faces"])
+
+    def __get_data_process(self, data_number, points):
+        tmp_list = []
+        data_array = []
+        for i in range(data_number):
+            [tmp_list.append(self.read_data.pop(0)) for j in range(points)]
+            data_array.append(tmp_list)
+            tmp_list = []
+        return np.array(data_array)
 
     def __len__(self):
         pass
 
-    def __getitem__(self):
-        return self.data
+    def __getitem__(self, key):
+        return self.data[key]
 
     @property
     def shape(self):
