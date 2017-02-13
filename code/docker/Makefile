@@ -73,7 +73,7 @@ TAG=$(shell echo $$CIRCLE_SHA1 | cut -c 1-7)
 # correctly.
 DOCKER_RUN_KERAS:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-cpu
 DOCKER_RUN_DL:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/deep-learning-gpu
-DOCKER_RUN_KERAS_GPU:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras
+DOCKER_RUN_KERAS_GPU:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-gpu
 
 # Wildcard rule to build an image from a file inside dockerfiles/
 # Use the tasks like any other dependency. Order may be controller
@@ -82,10 +82,10 @@ DOCKER_RUN_KERAS_GPU:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:r
 # for info on how this work and what $< and $(@F) mean.
 images/% : dockerfiles/% pull
 	ln -sf $< Dockerfile
-	rm -rf keras
 	cp -rf ../keras keras
 	docker build -t $(REPO_NAME)/$(@F) .
-	#rm Dockerfile
+	rm Dockerfile
+	rm -rf keras
 
 environment: pull docker-compose.yml
 	$(DOCKER_COMPOSE) up -d
@@ -104,7 +104,7 @@ test-python-keras-cpu : images/python-keras-cpu
 test-deep-learning-gpu : images/deep-learning-gpu
 	$(DOCKER_RUN_DL)
 
-test-python-keras : images/python-keras
+test-python-keras-gpu : images/python-keras-gpu
 	$(DOCKER_RUN_KERAS_GPU)
 
 teardown:

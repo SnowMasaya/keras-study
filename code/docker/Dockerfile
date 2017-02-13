@@ -1,1 +1,0 @@
-dockerfiles/deep-learning-gpu
