@@ -53,7 +53,13 @@ RUN conda install -y python=${python_version} && \
 #################################################################################################################
 
 ADD template/theanorc /home/keras/.theanorc
-
+#################################################################################################################
+#           Keras Model Zoo Setting
+#                https://github.com/albertomontesg/keras-model-zoo
+#################################################################################################################
+RUN git clone --depth 1 https://github.com/albertomontesg/keras-model-zoo.git /src/kerasmodelzoo && \
+    cd /src/kerasmodelzoo && \
+    python setup.py install
 #################################################################################################################
 #   Jupyter Setting
 #################################################################################################################
@@ -65,6 +71,7 @@ ADD data/ /src/model/
 
 ADD keras/ /src/keras/
 ADD data /src/keras/data
+RUN chmod -R 777 /src/keras && mv /src/kerasmodelzoo/kerasmodelzoo /src/keras/kerasmodelzoo
 WORKDIR /src
 USER keras
 
