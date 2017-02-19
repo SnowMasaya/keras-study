@@ -218,7 +218,6 @@ ADD data/model/ /src/model/
 EXPOSE 6006 8888
 
 ADD keras /src/keras
-ADD data /src/keras/data
 RUN chmod -R 777 /src/keras && mv /src/kerasmodelzoo/kerasmodelzoo /src/keras/kerasmodelzoo
 WORKDIR /src/
 USER keras
