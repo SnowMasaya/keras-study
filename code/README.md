@@ -59,3 +59,5 @@ THE SOFTWARE.
 #
 >[Docker](https://www.docker.com/)<br>
 >[docker-project-template](https://github.com/ahawkins/docker-project-template)
+>[[Python]強化学習(DQN)を実装しながらKerasに慣れる](http://qiita.com/yukiB/items/0a3faa759ca5561e12f8)
+>[Keras implementation of DQN](https://github.com/yukiB/keras-dqn-test/blob/master/dqn_agent.py)
