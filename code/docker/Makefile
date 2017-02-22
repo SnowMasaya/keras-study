@@ -71,10 +71,10 @@ TAG=$(shell echo $$CIRCLE_SHA1 | cut -c 1-7)
 # Define linked containers (these name should match keys in
 # fig.ml). The test & test-ci targets wil be run with all links set
 # correctly.
-DOCKER_RUN_KERAS:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-cpu
-DOCKER_RUN_DL:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/deep-learning-gpu
-DOCKER_RUN_DL_RL:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/deep-learning-gpu-rl
-DOCKER_RUN_KERAS_GPU:=docker run --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-gpu
+DOCKER_RUN_KERAS:=docker run --rm --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-cpu
+DOCKER_RUN_DL:=docker run --rm --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/deep-learning-gpu
+DOCKER_RUN_DL_RL:=nvidia-docker run --rm --privileged -p 8888:8888 -it $(REPO_NAME)/deep-learning-gpu-rl
+DOCKER_RUN_KERAS_GPU:=docker run --rm --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-gpu
 
 # Wildcard rule to build an image from a file inside dockerfiles/
 # Use the tasks like any other dependency. Order may be controller
