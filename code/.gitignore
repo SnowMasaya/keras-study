@@ -94,6 +94,7 @@ ENV/
 .idea/*
 Data/
 Data/*
+*.jpg
 disk.vdi
 *.pkl
 model/*

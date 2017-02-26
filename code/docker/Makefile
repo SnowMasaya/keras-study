@@ -75,6 +75,8 @@ DOCKER_RUN_KERAS:=docker run --rm --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:
 DOCKER_RUN_DL:=docker run --rm --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/deep-learning-gpu
 DOCKER_RUN_DL_RL:=nvidia-docker run --rm --privileged -p 8888:8888 -it $(REPO_NAME)/deep-learning-gpu-rl
 DOCKER_RUN_KERAS_GPU:=docker run --rm --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8888:8888 -it $(REPO_NAME)/python-keras-gpu
+DOCKER_RUN_OPENCV:=docker run --rm --privileged -p 8888:8888 -it $(REPO_NAME)/opencv
+DOCKER_RUN_EDWARD:=docker run --rm -p 8888:8888 -it $(REPO_NAME)/edward
 
 # Wildcard rule to build an image from a file inside dockerfiles/
 # Use the tasks like any other dependency. Order may be controller
@@ -99,6 +101,9 @@ test:
 # NOTE: Cannot use --rm on Circle CI, hence the seemingly
 # duplicate task.
 
+test-edward : images/edward
+	$(DOCKER_RUN_EDWARD)
+
 test-python-keras-cpu : images/python-keras-cpu
 	$(DOCKER_RUN_KERAS)
 
@@ -110,6 +115,9 @@ test-deep-learning-gpu-rl : images/deep-learning-gpu-rl
 
 test-python-keras-gpu : images/python-keras-gpu
 	$(DOCKER_RUN_KERAS_GPU)
+
+test-opencv : images/opencv
+	$(DOCKER_RUN_OPENCV)
 
 teardown:
 	$(DOCKER_COMPOSE) stop

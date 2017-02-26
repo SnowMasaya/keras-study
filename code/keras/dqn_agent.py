@@ -6,7 +6,7 @@ from collections import deque
 import os
 
 import numpy as np
-from keras.layers.core import Demse, Flatten
+from keras.layers.core import Dense, Flatten
 from keras.layers import Lambda, Input, Convolution2D
 from keras.models import model_from_yaml, Model
 import keras.callbacks
