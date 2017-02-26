@@ -122,7 +122,7 @@ class CatchBall:
     def reset(self):
         # reset player position:
         self.player_row = self.screen_n_rows - 1
-        self.player_col = np.random.randint(self.player_col - self.player_length)
+        self.player_col = np.random.randint(self.screen_n_cols - self.player_length)
 
         # reset ball position
         self.balls = []
